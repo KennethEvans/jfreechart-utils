@@ -40,7 +40,7 @@ public class Utils
     }
 
     /**
-     * Generic method to get a file suing a JFileChooder
+     * Generic method to get a file using a JFileChooser
      * 
      * @param defaultPath
      * @return the File or null if aborted.
