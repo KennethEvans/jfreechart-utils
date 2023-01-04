@@ -1,5 +1,6 @@
 package net.kenevans.jfreechart.jfreechartutils;
 
+import java.awt.Color;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -11,6 +12,8 @@ import org.jfree.chart.ChartFrame;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -45,6 +48,32 @@ public class PlotXY
     public PlotXY(String title, String xLabel, String yLabel, double[][] xVals,
         double[][] yVals) {
         createChart(title, xLabel, yLabel, xVals, yVals);
+    }
+
+    /**
+     * Constructor that creates a chart from single arrays of x and y values.
+     * If xVals is null, then it uses an index for x.
+     * 
+     * @param title The chart title. May be null.
+     * @param xLabel The chart x label. May be null.
+     * @param yLabel The chart y label. May be null.
+     * @param xVals The array of x values. May be null.
+     * @param yVals The array of y values.
+     */
+    public PlotXY(String title, String xLabel, String yLabel, double[] xVals,
+        double[] yVals) {
+        int nPoints = yVals.length;
+        double[][] yVals1 = new double[1][nPoints];
+        double[][] xVals1 = new double[1][nPoints];
+        for(int i = 0; i < nPoints; i++) {
+            if(xVals == null) {
+                xVals1[0][i] = i;
+            } else {
+                xVals1[0][i] = xVals[i];
+            }
+            yVals1[0][i] = yVals[i];
+        }
+        createChart(title, xLabel, yLabel, xVals1, yVals1);
     }
 
     /**
@@ -91,7 +120,11 @@ public class PlotXY
             false, // Show Legend
             false, // Use tooltips
             false // Configure chart to generate URLs?
-            );
+        );
+        XYPlot plot = (XYPlot)chart.getPlot();
+        plot.setBackgroundPaint(Color.white);
+        plot.setDomainGridlinePaint(Color.GRAY);
+        plot.setRangeGridlinePaint(Color.GRAY);
     }
 
     /**
@@ -131,6 +164,22 @@ public class PlotXY
         if(n < 0 || n >= nSeries) return;
         XYSeries series = dataset.getSeries(n);
         series.setKey(name);
+    }
+
+    /**
+     * Changes the color for a series.
+     * 
+     * @param n Index of the series. Nothing will be done if it is invalid.
+     * @param name Name of the key.
+     */
+    public void setSeriesColor(int n, Color color) {
+        if(dataset == null) return;
+        int nSeries = dataset.getSeriesCount();
+        if(n < 0 || n >= nSeries) return;
+        XYItemRenderer renderer = chart.getXYPlot().getRenderer();
+        renderer.setSeriesPaint(n, color);
+        // renderer.setSeriesShapesVisible(0, false);
+        // renderer.setSeriesShapesVisible(1, false);
     }
 
     /**
